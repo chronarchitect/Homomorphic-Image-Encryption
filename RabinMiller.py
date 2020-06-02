@@ -1,32 +1,5 @@
-import math
 import random
-
-def modular_binary_exponent(base, exponent, modulus):
-    """
-    modular_binary_exponent( base, exponent, modulus)
-    
-    args:
-        base
-        exponent
-        modulus
-    
-    generates:
-        base ^ exponent (mod modulus)
-    
-        along with intermediate results from binary exponentiation
-        required for Rabin-Miller primality test
-    """
-    if modulus == 1:
-        yield 0
-        return
-    bitmask = 1 << exponent.bit_length() - 1
-    res = 1
-    while bitmask:
-        res = (res * res) % modulus
-        if bitmask & exponent:
-            res = (res * base) % modulus
-        yield res
-        bitmask >>= 1
+import ModularArithmetic as mod
 
 def is_probably_prime(n):
     """
@@ -43,7 +16,7 @@ def is_probably_prime(n):
     tests = max(128, n.bit_length())
     for i in range(tests):
         rand = random.randint(1,n-1)
-        return 1 in modular_binary_exponent(rand, n-1, n)
+        return 1 in mod.binary_exponent(rand, n-1, n)
 
 def generate_prime(bitlen=128):
     """
