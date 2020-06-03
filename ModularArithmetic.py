@@ -1,5 +1,13 @@
 import math
 
+def lcm(a, b):
+    """
+    lcm(a, b)
+
+    returns Lowest Common Multiple of a and b
+    """
+    return a * b // xgcd(a,b)[0]
+
 def xgcd(a, b):
     """
     xgcd (a, b)
