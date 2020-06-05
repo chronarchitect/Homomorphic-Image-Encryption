@@ -115,3 +115,45 @@ def Decrypt(public_key, private_key, ciphertext):
     
     plaintext = (L(x) * private_key.μ) % public_key.n 
     return plaintext
+
+
+def homomorphic_add(public_key, a, b):
+    """
+    adds encrypted integer a to encrypted integer b 
+    
+    args:
+        public_key
+        encryption of integer a
+        encryption of integer b
+    returns:
+        encryption of sum of a and b
+    """
+    return (a * b) % public_key.nsq
+
+
+def homomorphic_add_constant(public_key, a, k):
+    """
+    adds a plaintext k to encrypted integer a
+    
+    args:
+        public_key
+        encryption of integer a
+        plaintext k
+    returns:
+        encryption of sum of a and k
+    """
+    return a * pow( public_key.g, k, public_key.nsq) % public_key.nsq
+
+
+def homomorphic_mult_constant(public_key, a, k):
+    """
+    multiplies a plaintext k to encrypted integer a
+    
+    args:
+        public_key
+        encryption of integer a
+        plaintext k
+    returns:
+        encryption of product of a and k
+    """
+    return pow(a, k, public_key.nsq)
