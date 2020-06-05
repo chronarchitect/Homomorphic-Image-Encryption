@@ -32,6 +32,7 @@ def multiplicative_inverse(a, modulus):
     else:
         return x % modulus
 
+
 def binary_exponent(base, exponent, modulus):
     """
     modular_binary_exponent( base, exponent, modulus)
