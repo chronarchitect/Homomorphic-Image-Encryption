@@ -6,7 +6,7 @@ import RabinMiller
 class PrivateKey:
     """
     PrivateKey object contains λ and μ
-    in accordance to the Pailier Cryptosystem
+    in accordance to the Paillier Cryptosystem
     
     args:
         p: a prime number
@@ -32,7 +32,7 @@ class PrivateKey:
 class PublicKey:
     """
     Public Key object contains n and g
-    in accordance to the Pailier Cryptosystem
+    in accordance to the Paillier Cryptosystem
     
     args:
         n: product of two equal lenght prime numbers
@@ -75,7 +75,7 @@ def Encrypt(public_key, plaintext):
     Encrypt( public_key, plaintext)
     
     args:
-        public_key: Pailier Publickey object
+        public_key: Paillier Publickey object
         plaintext: number to be encrypted
         
     returns:
@@ -100,8 +100,8 @@ def Decrypt(public_key, private_key, ciphertext):
     Decrypt( publick_key, private_key, ciphertext)
     
     args:
-        public_key: Pailier PublicKey object
-        private_key: Pailier PrivateKey object
+        public_key: Paillier PublicKey object
+        private_key: Paillier PrivateKey object
         ciphertext: Encrypted Integer which was ecnrypted using the public_key
         
     returns:

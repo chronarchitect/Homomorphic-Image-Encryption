@@ -2,12 +2,12 @@ from PIL import Image
 import numpy as np
 import pickle
 
-import Pailier
+import Paillier
 
 def ImgEncrypt(public_key, plainimg):
     """
     args:
-        public_key: Pailier PublicKey object
+        public_key: Paillier PublicKey object
         plainimg: PIL Image object
         
     returns:
@@ -18,7 +18,7 @@ def ImgEncrypt(public_key, plainimg):
     cipherimg = np.asarray(plainimg)
     shape = cipherimg.shape
     cipherimg = cipherimg.flatten().tolist()
-    cipherimg = [Pailier.Encrypt(public_key, pix) for pix in cipherimg]
+    cipherimg = [Paillier.Encrypt(public_key, pix) for pix in cipherimg]
     
     return np.asarray(cipherimg).reshape(shape)
 
@@ -26,8 +26,8 @@ def ImgEncrypt(public_key, plainimg):
 def ImgDecrypt(public_key, private_key, cipherimg):
     """
     args:
-        public_key: Pailier PublicKey object
-        private_key: Pailier PrivateKey object
+        public_key: Paillier PublicKey object
+        private_key: Paillier PrivateKey object
         cipherimg: encryption of Image
         
     returns:
@@ -36,7 +36,7 @@ def ImgDecrypt(public_key, private_key, cipherimg):
     """
     shape = cipherimg.shape
     plainimg = cipherimg.flatten().tolist()
-    plainimg = [Pailier.Decrypt(public_key, private_key, pix) for pix in plainimg]
+    plainimg = [Paillier.Decrypt(public_key, private_key, pix) for pix in plainimg]
     plainimg = [pix if pix < 255 else 255 for pix in plainimg]
     plainimg = [pix if pix > 0 else 0 for pix in plainimg]
     
@@ -46,7 +46,7 @@ def ImgDecrypt(public_key, private_key, cipherimg):
 def homomorphicBrightness(public_key, cipherimg, factor):
     """
     args:
-        public_key: Pailier PublicKey object
+        public_key: Paillier PublicKey object
         cipherimg: n dimensional array containing encryption of image pixels
         factor: Amount of brightness to be added (-ve for decreasing brightness)
     
@@ -58,7 +58,7 @@ def homomorphicBrightness(public_key, cipherimg, factor):
     """
     shape = cipherimg.shape
     brightimg = cipherimg.flatten().tolist()
-    brightimg = [Pailier.homomorphic_add_constant(public_key, pix, factor) for pix in brightimg]
+    brightimg = [Paillier.homomorphic_add_constant(public_key, pix, factor) for pix in brightimg]
     
     return np.asarray(brightimg).reshape(shape)
 
