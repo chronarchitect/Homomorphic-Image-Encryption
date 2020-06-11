@@ -1,7 +1,5 @@
 # Secure Outsourcing of Image Editing Based on Homomorphic Encryption
 
-We try to secure image storage over the cloud.
-
 ### Problem Definition
 Various cloud storage services now provide some basic image editing functionalities as well. Considering an image may disclose private information about the user and most coud based services provide free tier plans. The security threats faced by the user primarily from
 
