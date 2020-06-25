@@ -12,7 +12,7 @@ We construct an image encryption and editing model based on homomorphic encrypti
 In our implementaion we extend Paillier's Homomorphic Encryption (PHE) scheme to operate over images. The Paillier cryptosystem is an additive homomorphic and probabilistic asymmetric encryption scheme. It is only partially homomorphic as it can only add encrypted ciphertexts or multiply an encrypted ciphertext by a plaintext. <br/>
 The homomorphic properties of this cryptosystem is demonstrated by applying a brightness adjustment transform over the encrypted image.
 
-#### Implementating PHE
+#### Implementing PHE
 
 We implement PHE and then extend it for images. To generate secure keys we require large primes. In our implementation we use the Rabin-Miller primality test to generate probabilistic primes of a given bit length. <br/>
 All of the mathematics required for Paillier Cryptosystem and Rabin-Miller test are defined inside `ModularArithmetic.py` <br/>
