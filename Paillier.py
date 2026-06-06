@@ -70,13 +70,14 @@ def generate_keys(bitlen=128):
     return (PublicKey(n), PrivateKey(p, q, n))
 
 
-def Encrypt(public_key, plaintext):
+def Encrypt(public_key, plaintext, rn=None):
     """
-    Encrypt( public_key, plaintext)
+    Encrypt( public_key, plaintext, rn=None)
     
     args:
         public_key: Paillier Publickey object
         plaintext: number to be encrypted
+        rn: optional pre-computed r^n % n^2
         
     returns:
         ciphertext: encryption of plaintext
@@ -84,15 +85,26 @@ def Encrypt(public_key, plaintext):
         where, r is a random number in n such that r and n are coprime
     """
     
+    if rn is None:
+        r = random.randint( 1, public_key.n-1)
+        while not ModularArithmetic.xgcd( r, public_key.n)[0] == 1:
+            r = random.randint( 1, public_key.n)
+        rn = pow(r, public_key.n, public_key.nsq)
+        
+    # Optimization: Since g = n + 1, (n+1)^m mod n^2 = (1 + m*n) mod n^2
+    a = (1 + (plaintext * public_key.n)) % public_key.nsq
+    
+    ciphertext = (a * rn) % public_key.nsq
+    return ciphertext
+
+def get_random_rn(public_key):
+    """
+    Generates a random r^n % n^2 for pre-computation.
+    """
     r = random.randint( 1, public_key.n-1)
     while not ModularArithmetic.xgcd( r, public_key.n)[0] == 1:
         r = random.randint( 1, public_key.n)
-        
-    a = pow(public_key.g, plaintext, public_key.nsq)
-    b = pow(r, public_key.n, public_key.nsq)
-    
-    ciphertext = (a * b) % public_key.nsq
-    return ciphertext
+    return pow(r, public_key.n, public_key.nsq)
 
 
 def Decrypt(public_key, private_key, ciphertext):
@@ -142,7 +154,9 @@ def homomorphic_add_constant(public_key, a, k):
     returns:
         encryption of sum of a and k
     """
-    return a * pow( public_key.g, k, public_key.nsq) % public_key.nsq
+    # Optimization: g^k mod n^2 = (1 + kn) mod n^2
+    gk = (1 + (k * public_key.n)) % public_key.nsq
+    return a * gk % public_key.nsq
 
 
 def homomorphic_mult_constant(public_key, a, k):
