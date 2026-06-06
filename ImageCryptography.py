@@ -4,6 +4,8 @@ import pickle
 import concurrent.futures
 import multiprocessing
 import os
+import json
+import math
 
 import Paillier
 
@@ -130,3 +132,72 @@ def loadEncryptedImg(filename):
     cipherimg = pickle.load(fstream)
     fstream.close()
     return cipherimg
+
+
+def saveVisualEncryptedImg(cipherimg, filename):
+    """
+    Saves an encrypted image as a visual PNG with a sidecar JSON for metadata.
+    """
+    if not os.path.exists("encrypted-images"):
+        os.makedirs("encrypted-images")
+
+    shape = cipherimg.shape
+    flat_cipher = cipherimg.flatten()
+
+    # Determine max byte length for alignment
+    max_val = int(np.max(flat_cipher))
+    pixel_byte_len = (max_val.bit_length() + 7) // 8
+    
+    # Pack into bytes
+    byte_stream = bytearray()
+    for val in flat_cipher:
+        byte_stream.extend(int(val).to_bytes(pixel_byte_len, byteorder='big'))
+
+    # Determine dimensions for PNG (try to make it roughly square)
+    total_bytes = len(byte_stream)
+    width = int(math.sqrt(total_bytes))
+    if width == 0: width = 1
+    height = math.ceil(total_bytes / width)
+    
+    # Pad byte stream to fit width * height
+    padding = (width * height) - total_bytes
+    byte_stream.extend(b'\x00' * padding)
+
+    # Save PNG
+    img = Image.frombytes('L', (width, height), bytes(byte_stream))
+    img.save(f"encrypted-images/{filename}.png", "PNG")
+
+    # Save sidecar metadata
+    metadata = {
+        "shape": shape,
+        "pixel_byte_len": pixel_byte_len,
+        "total_bytes": total_bytes
+    }
+    with open(f"encrypted-images/{filename}.json", "w") as f:
+        json.dump(metadata, f)
+
+
+def loadVisualEncryptedImg(filename):
+    """
+    Loads an encrypted image from a visual PNG and its sidecar JSON.
+    """
+    # Load metadata
+    with open(f"encrypted-images/{filename}.json", "r") as f:
+        metadata = json.load(f)
+    
+    shape = tuple(metadata["shape"])
+    pixel_byte_len = metadata["pixel_byte_len"]
+    total_bytes = metadata["total_bytes"]
+
+    # Load PNG bytes
+    img = Image.open(f"encrypted-images/{filename}.png")
+    all_bytes = img.tobytes()
+    byte_stream = all_bytes[:total_bytes]
+
+    # Unpack bytes
+    flat_cipher = []
+    for i in range(0, total_bytes, pixel_byte_len):
+        chunk = byte_stream[i : i + pixel_byte_len]
+        flat_cipher.append(int.from_bytes(chunk, byteorder='big'))
+
+    return np.array(flat_cipher).reshape(shape)
